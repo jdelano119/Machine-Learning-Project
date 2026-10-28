@@ -7,7 +7,7 @@ from typing import Dict, List, Optional, Tuple
 
 import numpy as np
 import pandas as pd
-from datasets import Image as HFImageFeature
+from datasets import ClassLabel, Image as HFImageFeature
 from datasets import load_dataset
 from PIL import Image
 from sklearn.model_selection import train_test_split
@@ -169,7 +169,11 @@ def main() -> None:
 
     filtered_rows = []
     for row_index, row in enumerate(dataset_split):
-        species_name = extract_species(row[label_col])
+        raw_label = row[label_col]
+        label_feature = dataset_split.features[label_col]
+        if isinstance(label_feature, ClassLabel):
+            raw_label = label_feature.int2str(raw_label)
+        species_name = extract_species(raw_label)
         normalized_label = normalize_name(species_name)
         if normalized_label in normalized_species:
             filtered_rows.append(

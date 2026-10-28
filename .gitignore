@@ -3,7 +3,7 @@ __pycache__/
 *.pyc
 .ipynb_checkpoints/
 
-data/images/
+
 data/manifest.csv
 data/needs_review.csv
 data/summary.json
