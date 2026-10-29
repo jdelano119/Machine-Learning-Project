@@ -95,7 +95,7 @@ def pil_from_dataset_image(image_object) -> Image.Image:
     raise ValueError("Unsupported image format returned by dataset.")
 
 
-def create_silhouette_with_alpha(image: Image.Image) -> Tuple[Optional[Image.Image], str]:
+def create_silhouette_with_alpha(image: Image.Image, threshold: int = 128) -> Tuple[Optional[Image.Image], str]:
     rgba = image.convert("RGBA")
     alpha = np.array(rgba.split()[-1])
 
@@ -104,7 +104,7 @@ def create_silhouette_with_alpha(image: Image.Image) -> Tuple[Optional[Image.Ima
         return None, "no_transparent_background"
 
     silhouette = np.zeros((rgba.height, rgba.width, 4), dtype=np.uint8)
-    silhouette[:, :, 3] = (alpha > 0).astype(np.uint8) * 255
+    silhouette[:, :, 3] = (alpha >= threshold).astype(np.uint8) * 255
 
     return Image.fromarray(silhouette, mode="RGBA"), "ok"
 
