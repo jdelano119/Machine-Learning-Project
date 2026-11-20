@@ -39,6 +39,94 @@ We use the Generation 1 Pokémon image dataset available on Hugging Face.
 
 **Dataset:** [RogerKoala/gen1-pokemon-images](https://huggingface.co/datasets/RogerKoala/gen1-pokemon-images)
 
-The dataset contains labeled images of original Generation 1 Pokémon.
+The dataset contains labeled images of original Generation 1 Pokémon. The
+dataset preparation script uses 18 species by default and creates
+train/validation/test splits for both original images and silhouettes.
 
-We plan to select approximately 15–20 Pokémon species with enough
+## Running the Project
+
+Run the commands below from the repository root.
+
+### 1. Create an environment and install dependencies
+
+Python 3.10 or newer is recommended.
+
+```bash
+python -m venv .venv
+source .venv/bin/activate
+python -m pip install --upgrade pip
+python -m pip install -r requirements.txt
+```
+
+On Windows PowerShell, activate the environment with:
+
+```powershell
+.venv\Scripts\Activate.ps1
+```
+
+### 2. Prepare the dataset
+
+Download the dataset from Hugging Face, select the default Pokémon species,
+split the images into train/validation/test sets, and generate silhouettes:
+
+```bash
+python -m data_processing.prepare_dataset
+```
+
+This creates `data/manifest.csv`, `data/class_mapping.json`,
+`data/summary.json`, and the image files under `data/images/`.
+
+To select a different set of species or output directory:
+
+```bash
+python -m data_processing.prepare_dataset \
+  --species "Pikachu,Raichu,Eevee" \
+  --output-dir data
+```
+
+### 3. Visualize original/silhouette pairs
+
+```bash
+python -m data_processing.visualize_pairs --split train --num-samples 8
+```
+
+To save the visualization instead of displaying it:
+
+```bash
+python -m data_processing.visualize_pairs \
+  --split test \
+  --num-samples 8 \
+  --save-path outputs/test_pairs.png
+```
+
+### 4. Train and evaluate the models
+
+The default training command runs the three configured experiments:
+
+```bash
+python -m model_training.train
+```
+
+Training outputs are saved under `outputs/cnn/`, including model weights,
+metrics, confusion matrices, and a comparison plot. Useful options include:
+
+```bash
+python -m model_training.train \
+  --model mobilenetv2 \
+  --epochs 8 \
+  --batch-size 32 \
+  --experiments original_to_original original_to_silhouette
+```
+
+The script automatically uses a CUDA GPU when one is available; otherwise it
+uses the CPU.
+
+### 5. Run the demonstration notebook
+
+After preparing the dataset, start Jupyter with:
+
+```bash
+jupyter notebook
+```
+
+Open `notebooks/pokemon_pairs_demo.ipynb` in the browser and run its cells.
