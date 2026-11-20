@@ -73,6 +73,9 @@ split the images into train/validation/test sets, and generate silhouettes:
 python -m data_processing.prepare_dataset
 ```
 
+An internet connection is required for this download. The Hugging Face dataset
+cache is reused on later runs.
+
 This creates `data/manifest.csv`, `data/class_mapping.json`,
 `data/summary.json`, and the image files under `data/images/`.
 
